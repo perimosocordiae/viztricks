@@ -11,3 +11,8 @@ optional dependency.
 To create animated GIFs with `FigureSaver`, imagemagick must be installed
 with the `convert` program on the path.
 
+To run the test suite:
+
+    ./run_tests.sh
+
+Testing requires python packages nose and nose-cov.
