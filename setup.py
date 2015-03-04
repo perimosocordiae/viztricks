@@ -12,10 +12,11 @@ setup(
     license='MIT',
     packages=['viztricks'],
     install_requires=[
-        'numpy >= 1.8',
+        'numpy >= 1.6.1',
+        'scipy >= 0.10',
         'matplotlib >= 1.3.1',
     ],
     extras_require=dict(
-        scipy_deps=['scipy >= 0.14'],
-        sklearn_deps=['scikit-learn >= 0.15']),
+        pca_ellipse=['scikit-learn >= 0.14'],
+    ),
 )

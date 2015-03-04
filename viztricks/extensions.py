@@ -1,17 +1,14 @@
 import numpy as np
-from matplotlib import pyplot
+import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from matplotlib.patches import Polygon, Ellipse
 
-from convenience import *
-from figuresaver import FigureSaver
-from shims import *
+from shims import quiver3d
 
 __all__ = [
-    'plot', 'plot_trajectories', 'gradient_line', 'violinplot', 'quiver3d',
-    'vector_field', 'FigureSaver', 'irregular_contour', 'voronoi_filled',
-    'pca_ellipse', 'axes_grid', 'imagesc', 'embedded_images'
+    'gradient_line', 'vector_field', 'irregular_contour',
+    'voronoi_filled', 'pca_ellipse', 'embedded_images'
 ]
 
 
@@ -19,13 +16,13 @@ def gradient_line(xs, ys, colormap_name='jet', ax=None):
   '''Plot a 2-d line with a gradient representing ordering.
   See http://stackoverflow.com/q/8500700/10601 for details.'''
   if ax is None:
-    ax = pyplot.gca()
-  cm = pyplot.get_cmap(colormap_name)
+    ax = plt.gca()
+  cm = plt.get_cmap(colormap_name)
   npts = len(xs)-1
   ax.set_color_cycle([cm(float(i)/npts) for i in xrange(npts)])
   for i in xrange(npts):
     ax.plot(xs[i:i+2],ys[i:i+2])
-  return pyplot.show
+  return plt.show
 
 
 def vector_field(points, directions, title=None, fig=None, ax=None,
@@ -35,11 +32,11 @@ def vector_field(points, directions, title=None, fig=None, ax=None,
   # Make sure we have an axis.
   if ax is None:
     if points.shape[1] == 2:
-      ax = pyplot.gca()
+      ax = plt.gca()
     else:
       from mpl_toolkits.mplot3d import Axes3D
       if fig is None:
-        fig = pyplot.gcf()
+        fig = plt.gcf()
       ax = Axes3D(fig)
   # Plot.
   if points.shape[1] == 2:
@@ -60,10 +57,10 @@ def vector_field(points, directions, title=None, fig=None, ax=None,
       ax.scatter(x, y, z, marker=vertex_style, zorder=2, edgecolor='none')
   if title:
     ax.set_title(title)
-  return pyplot.show
+  return plt.show
 
 
-def irregular_contour(x, y, z, func=pyplot.contourf, func_kwargs=dict(),
+def irregular_contour(x, y, z, func=plt.contourf, func_kwargs=dict(),
                       grid_size=(100,100), padding_fraction=0.05,
                       interp_method='nearest'):
   '''Handles interpolating irregular data to a grid,
@@ -144,7 +141,7 @@ def voronoi_filled(points, colors, show_points=False, padding_fraction=0.05,
 
   # Plot colored polygons
   if ax is None:
-    ax = pyplot.gca()
+    ax = plt.gca()
   polys = PatchCollection([Polygon(vertices[region]) for region in regions],
                           cmap=cmap, alpha=alpha, edgecolor=edgecolor)
   polys.set_array(colors)
@@ -171,7 +168,7 @@ def pca_ellipse(data, loc=None, ax=None, **ellipse_kwargs):
   if loc is None:
     loc = pca.mean_
   if ax is None:
-    ax = pyplot.gca()
+    ax = plt.gca()
   cov = pca.explained_variance_ * pca.components_.T
   u,s,v = np.linalg.svd(cov)
   width,height = 2*np.sqrt(s[:2])
@@ -188,10 +185,9 @@ def embedded_images(X, images, exclusion_radius=None, ax=None, cmap=None,
   embeddings, especially when plotted over a scatterplot. Selects random points
   to annotate with their corresponding image, respecting an exclusion_radius
   around each selected point.'''
-  from sklearn.metrics import pairwise_distances  # TODO: remove this dep.
   assert X.shape[0] == images.shape[0], 'Unequal number of points and images'
   if ax is None:
-    ax = pyplot.gca()
+    ax = plt.gca()
   if exclusion_radius is None:
     # TODO: make a smarter default based on image size and axis limits
     exclusion_radius = 1.
@@ -202,7 +198,8 @@ def embedded_images(X, images, exclusion_radius=None, ax=None, cmap=None,
     im = OffsetImage(images[i], zoom=zoom, cmap=cmap)
     ab = AnnotationBbox(im, X[i], xycoords='data', frameon=frameon)
     ax.add_artist(ab)
-    mask = (pairwise_distances(X[i:i+1], X) > exclusion_radius).ravel()
+    dist = np.sqrt(np.square(X[i] - X).sum(axis=1))
+    mask = (dist > exclusion_radius).ravel()
     X = X[mask]
     images = images[mask]
-  return pyplot.show
+  return plt.show

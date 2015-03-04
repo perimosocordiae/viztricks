@@ -5,8 +5,9 @@ To install, clone this repository and run:
 
     python setup.py install
 
-matplotlib and numpy are required dependencies, but some of the functions
-rely on scipy and/or scikit-learn as well.
+This package depends on numpy, scipy, and matplotlib.
+The `pca_ellipse` function relies on scikit-learn as well, but this is an
+optional dependency.
 To create animated GIFs with `FigureSaver`, imagemagick must be installed
 with the `convert` program on the path.
 
