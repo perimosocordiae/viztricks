@@ -4,8 +4,6 @@ from matplotlib.collections import PatchCollection
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from matplotlib.patches import Polygon, Ellipse
 
-from shims import quiver3d
-
 __all__ = [
     'gradient_line', 'vector_field', 'irregular_contour',
     'voronoi_filled', 'pca_ellipse', 'embedded_images'
@@ -23,6 +21,14 @@ def gradient_line(xs, ys, colormap_name='jet', ax=None):
   for i in xrange(npts):
     ax.plot(xs[i:i+2],ys[i:i+2])
   return plt.show
+
+
+def _quiver3d(ax, x, y, z, dx, dy, dz, **kwargs):
+  try:
+    return ax.quiver(x, y, z, dx, dy, dz, pivot='tail', **kwargs)
+  except AttributeError:
+    # this mpl doesn't have the pivot kwarg, and it defaults to 'head' behavior
+    return ax.quiver(x+dx, y+dy, z+dz, dx, dy, dz, **kwargs)
 
 
 def vector_field(points, directions, title=None, fig=None, ax=None,
@@ -43,7 +49,7 @@ def vector_field(points, directions, title=None, fig=None, ax=None,
     x,y = points.T
     dx,dy = directions.T
     if hasattr(ax, 'zaxis'):  # Must be on a 3d plot axis, so supply zeros.
-      quiver3d(ax, x, y, 0, dx, dy, 0, arrow_length_ratio=0.1)
+      _quiver3d(ax, x, y, 0, dx, dy, 0, arrow_length_ratio=0.1)
     else:
       args = (x, y, dx, dy)
       ax.quiver(*args, angles='xy', scale_units='xy', scale=1, headwidth=5)
@@ -52,7 +58,7 @@ def vector_field(points, directions, title=None, fig=None, ax=None,
   else:
     x,y,z = points.T
     dx,dy,dz = directions.T
-    quiver3d(ax, x, y, z, dx, dy, dz, arrow_length_ratio=0.1)
+    _quiver3d(ax, x, y, z, dx, dy, dz, arrow_length_ratio=0.1)
     if vertex_style is not None:
       ax.scatter(x, y, z, marker=vertex_style, zorder=2, edgecolor='none')
   if title:

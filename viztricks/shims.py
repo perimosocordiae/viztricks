@@ -1,15 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-__all__ = ['quiver3d', 'violinplot']
-
-
-def quiver3d(ax, x, y, z, dx, dy, dz, **kwargs):
-  try:
-    return ax.quiver(x, y, z, dx, dy, dz, pivot='tail', **kwargs)
-  except AttributeError:
-    # this mpl doesn't have the pivot kwarg, and it defaults to 'head' behavior
-    return ax.quiver(x+dx, y+dy, z+dz, dx, dy, dz, **kwargs)
+__all__ = ['violinplot']
 
 
 def _violin(data, pos, amplitude, **kwargs):
