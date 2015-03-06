@@ -2,6 +2,7 @@ import matplotlib
 matplotlib.use('template')  # Mock backend, doesn't show anything
 
 import numpy as np
+import matplotlib.pyplot as plt
 import unittest
 import viztricks as viz
 from viztricks import shims
@@ -25,6 +26,18 @@ class TestVizTricks(unittest.TestCase):
     labels = ['a','b','c','d','e']
     viz.plot_trajectories([self.X, self.X+2], '-x', labels=labels, title='Test')
     viz.plot_trajectories([self.Y], '--', labels=labels, title='Test 3D')
+
+  def test_imagesc(self):
+    viz.imagesc(self.X)
+    viz.imagesc(self.X, ax=plt.gca())
+
+  def test_axes_grid(self):
+    fig, axes = viz.axes_grid(1)
+    self.assertEqual(axes.shape, (1,1))
+    fig, axes = viz.axes_grid(5)
+    self.assertEqual(axes.shape, (2,3))
+    self.assertTrue(axes[0,0].axison)
+    self.assertFalse(axes[-1,-1].axison)
 
   def test_gradient_line(self):
     viz.gradient_line(self.X[:,0], self.X[:,1])
