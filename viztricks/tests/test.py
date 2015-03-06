@@ -7,6 +7,13 @@ import unittest
 import viztricks as viz
 from viztricks import shims
 
+try:
+  import sklearn
+except ImportError:
+  has_sklearn = False
+else:
+  has_sklearn = True
+
 
 class TestVizTricks(unittest.TestCase):
   # These exercise plotting methods, but don't actually check for correct output
@@ -54,6 +61,21 @@ class TestVizTricks(unittest.TestCase):
   def test_irregular_contour(self):
     a,b,c = self.Y.T
     viz.irregular_contour(a, b, c)
+
+  def test_voronoi_filled(self):
+    colors = np.arange(len(self.X))
+    viz.voronoi_filled(self.X, colors, show_points=True)
+
+  @unittest.skipUnless(has_sklearn, 'requires scikit-learn')
+  def test_pca_ellipse(self):
+    ell = viz.pca_ellipse(self.X)
+    self.assertAlmostEqual(ell.angle, 165.0567, places=4)
+    self.assertAlmostEqual(ell.width, 2.9213, places=4)
+    self.assertAlmostEqual(ell.height, 0.7115, places=4)
+
+  def test_embedded_images(self):
+    images = np.random.random((len(self.X), 3, 3))
+    viz.embedded_images(self.X, images, seed=1234)
 
 if __name__ == '__main__':
   unittest.main()

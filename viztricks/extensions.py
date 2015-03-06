@@ -186,6 +186,7 @@ def embedded_images(X, images, exclusion_radius=None, ax=None, cmap=None,
   to annotate with their corresponding image, respecting an exclusion_radius
   around each selected point.'''
   assert X.shape[0] == images.shape[0], 'Unequal number of points and images'
+  assert X.shape[1] == 2, 'X must be 2d'
   if ax is None:
     ax = plt.gca()
   if exclusion_radius is None:
