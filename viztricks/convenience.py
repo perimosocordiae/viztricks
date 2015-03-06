@@ -75,7 +75,8 @@ def axes_grid(n):
   r = np.floor(np.sqrt(n))
   r, c = int(r), int(np.ceil(n / r))
   fig, axes = plt.subplots(nrows=r, ncols=c, figsize=(c*4, r*4))
+  axes = np.atleast_2d(axes)
   # Turn off any extra axes
   for ax in axes.flat[n:]:
     ax.set_axis_off()
-  return fig, np.atleast_2d(axes)
+  return fig, axes
