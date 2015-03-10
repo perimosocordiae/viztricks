@@ -30,9 +30,8 @@ class TestVizTricks(unittest.TestCase):
     viz.plot(self.Y, scatter=True, c=self.Y.sum(axis=1))
 
   def test_plot_trajectories(self):
-    labels = ['a','b','c','d','e']
-    viz.plot_trajectories([self.X, self.X+2], '-x', labels=labels, title='Test')
-    viz.plot_trajectories([self.Y], '--', labels=labels, title='Test 3D')
+    viz.plot_trajectories([self.X, self.X+2], colors=np.arange(2))
+    viz.plot_trajectories([])
 
   def test_imagesc(self):
     viz.imagesc(self.X)

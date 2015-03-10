@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
 
 __all__ = [
     'plot', 'plot_trajectories', 'imagesc', 'axes_grid', 'vector_field'
@@ -44,21 +45,19 @@ def plot(X, marker='.', title=None, fig=None, ax=None, scatter=False, **kwargs):
   return plt.show
 
 
-def plot_trajectories(T, marker='x-', labels=None,
-                      title=None, fig=None, ax=None):
-  '''Plot t trajectories (2d or 3d).'''
-  assert (hasattr(T[0], 'shape') and len(T[0].shape) == 2
-          ), 'T must be a sequence of 2d or 3d point-sets'
-  plot(T[0], marker=marker, fig=fig, ax=ax)
-  # hack: make sure we use the same fig and ax for each plot
-  fig = plt.gcf()
-  ax = fig.gca()
-  for traj in T[1:]:
-    plot(traj, marker=marker, fig=fig, ax=ax)
-  if labels:
-    ax.legend(labels)
-  if title:
-    ax.set_title(title)
+def plot_trajectories(T, colors=None, ax=None, colorbar=False, cmap=None,
+                      alpha=1, linewidth=1):
+  '''Plot lines in T as trajectories (2d only).'''
+  if ax is None:
+    ax = plt.gca()
+  lc = LineCollection(T, array=colors, cmap=cmap, alpha=alpha,
+                      linewidth=linewidth)
+  ax.add_collection(lc, autolim=True)
+  if colors is not None and colorbar:
+    cbar = ax.figure.colorbar(lc)
+    cbar.set_alpha(1.)  # colorbars with alpha are ugly
+    cbar.draw_all()
+  ax.autoscale_view()
   return plt.show
 
 
