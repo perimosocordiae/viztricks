@@ -28,6 +28,8 @@ class TestVizTricks(unittest.TestCase):
     viz.plot(self.X[0], scatter=True)
     viz.plot(self.Y, '-o', title='Test')
     viz.plot(self.Y, scatter=True, c=self.Y.sum(axis=1))
+    viz.plot(self.Y, fig='new')
+    viz.plot(self.Y, fig=plt.gcf())
 
   def test_plot_trajectories(self):
     viz.plot_trajectories([self.X, self.X+2], colors=np.arange(2))
