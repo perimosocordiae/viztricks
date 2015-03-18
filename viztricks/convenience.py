@@ -7,17 +7,22 @@ __all__ = [
 ]
 
 
-def plot(X, marker='.', title=None, fig=None, ax=None, scatter=False, **kwargs):
+def plot(X, marker='.', title=None, fig='current', ax=None,
+         scatter=False, **kwargs):
   '''General plotting function for a set of points X.
-  May be 1, 2, or 3 dimensional.'''
+  When ax=None, fig can be a figure object, 'current', or 'new'.
+  Otherwise, the provided axis will be used.
+  '''
   assert len(X.shape) in (1,2), 'Only valid for 1 or 2-d arrays of points'
   assert (len(X.shape) == 1 or X.shape[1] in (1,2,3)
           ), 'Only valid for [1-3]-dimensional points'
   is_3d = len(X.shape) == 2 and X.shape[1] == 3
   is_1d = len(X.shape) == 1 or X.shape[1] == 1
   if ax is None:
-    if fig is None:
+    if fig in (None, 'current'):
       fig = plt.gcf()
+    elif fig == 'new':
+      fig = plt.figure()
     if is_3d:
       from mpl_toolkits.mplot3d import Axes3D
       ax = Axes3D(fig)
