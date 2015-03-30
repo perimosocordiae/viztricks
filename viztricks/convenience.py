@@ -75,7 +75,7 @@ def imagesc(data, ax=None):
 
 
 def axes_grid(n, sharex=False, sharey=False, subplot_kw=None, gridspec_kw=None,
-              fig_kw=None):
+              **fig_kw):
   '''Finds a reasonable arrangement of n axes. Returns (fig, axes) tuple.
   For keyword arguments descriptions, see matplotlib.pyplot.subplots'''
   r = np.floor(np.sqrt(n))
