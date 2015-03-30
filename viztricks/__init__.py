@@ -1,5 +1,5 @@
 from convenience import *
-from figuresaver import FigureSaver
+from contexts import *
 from shims import *
 from extensions import *
 
