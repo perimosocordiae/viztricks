@@ -7,17 +7,22 @@ __all__ = [
 ]
 
 
-def plot(X, marker='.', title=None, fig='current', ax=None,
-         scatter=False, **kwargs):
-  '''General plotting function for a set of points X.
-  When ax=None, fig can be a figure object, 'current', or 'new'.
-  Otherwise, the provided axis will be used.
+def plot(X, marker='.', kind='plot', title=None, fig='current', ax=None,
+         **kwargs):
+  '''General plotting function that aims to cover most common cases.
+  X : numpy array of 1d, 2d, or 3d points, with one point per row.
+  marker : passed to the underlying plotting function
+  kind : one of {plot, scatter} that controls the plot type.
+  title : if given, used as the axis title
+  fig : a matplotlib.Figure, or one of {current, new}. Only used when ax=None.
+  ax : a matplotlib.Axes object, or None
+  All other keyword arguments are passed on to the underlying plotting function.
   '''
-  assert len(X.shape) in (1,2), 'Only valid for 1 or 2-d arrays of points'
-  assert (len(X.shape) == 1 or X.shape[1] in (1,2,3)
-          ), 'Only valid for [1-3]-dimensional points'
-  is_3d = len(X.shape) == 2 and X.shape[1] == 3
-  is_1d = len(X.shape) == 1 or X.shape[1] == 1
+  X = np.asanyarray(X)
+  if X.ndim not in (1,2) or (X.ndim == 2 and X.shape[1] not in (1,2,3)):
+    raise ValueError('Input data must be rows of 1, 2, or 3 dimensional points')
+  is_3d = X.ndim == 2 and X.shape[1] == 3
+  is_1d = X.ndim == 1 or X.shape[1] == 1
   if ax is None:
     if fig in (None, 'current'):
       fig = plt.gcf()
@@ -28,23 +33,29 @@ def plot(X, marker='.', title=None, fig='current', ax=None,
       ax = Axes3D(fig)
     else:
       ax = fig.add_subplot(111)
-  elif is_3d:
-    assert hasattr(ax, 'zaxis'), 'Must provide an Axes3D axis'
+  elif is_3d and not hasattr(ax, 'zaxis'):
+    raise ValueError('Must provide an Axes3D axis for 3d data')
+  # XXX: support old-style scatter=True kwarg usage
+  if kwargs.get('scatter', False):
+    kind = 'scatter'
+    del kwargs['scatter']
   # Do the plotting
-  if scatter:
+  if kind is 'scatter':
     if is_1d:
       ax.scatter(range(len(X)), X, marker=marker, **kwargs)
     elif is_3d:
       ax.scatter(X[:,0], X[:,1], X[:,2], marker=marker, **kwargs)
     else:
       ax.scatter(X[:,0], X[:,1], marker=marker, **kwargs)
-  else:
+  elif kind is 'plot':
     if is_1d:
       ax.plot(X, marker, **kwargs)
     elif is_3d:
       ax.plot(X[:,0], X[:,1], X[:,2], marker, **kwargs)
     else:
       ax.plot(X[:,0], X[:,1], marker, **kwargs)
+  else:
+    raise ValueError('Unsupported kind: %r' % kind)
   if title:
     ax.set_title(title)
   return plt.show
