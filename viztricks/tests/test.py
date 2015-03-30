@@ -78,5 +78,15 @@ class TestVizTricks(unittest.TestCase):
     images = np.random.random((len(self.X), 3, 3))
     viz.embedded_images(self.X, images, seed=1234)
 
+  def test_FigureSaver(self):
+    old_savefig = plt.savefig
+    saved_fnames = []
+    plt.savefig = lambda fname: saved_fnames.append(fname)
+    with viz.FigureSaver(name='test', mode='frames'):
+      plt.show()
+      plt.show()
+    plt.savefig = old_savefig
+    self.assertEqual(saved_fnames, ['test-00000.png', 'test-00001.png'])
+
 if __name__ == '__main__':
   unittest.main()
