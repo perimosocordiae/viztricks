@@ -29,7 +29,7 @@ def _violinplot(dataset, positions=None, vert=True, widths=0.5,
   if ax is None:
     ax = plt.gca()
   if positions is None:
-    positions = np.arange(len(dataset))
+    positions = np.arange(1, len(dataset)+1)
   amp = widths / 2.0
   result = dict(bodies=[], means=[], mins=[], maxes=[], bars=[], medians=[])
   for pos, d in zip(positions, dataset):
