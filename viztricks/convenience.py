@@ -23,18 +23,7 @@ def plot(X, marker='.', kind='plot', title=None, fig='current', ax=None,
     raise ValueError('Input data must be rows of 1, 2, or 3 dimensional points')
   is_3d = X.ndim == 2 and X.shape[1] == 3
   is_1d = X.ndim == 1 or X.shape[1] == 1
-  if ax is None:
-    if fig in (None, 'current'):
-      fig = plt.gcf()
-    elif fig == 'new':
-      fig = plt.figure()
-    if is_3d:
-      from mpl_toolkits.mplot3d import Axes3D
-      ax = Axes3D(fig)
-    else:
-      ax = fig.add_subplot(111)
-  elif is_3d and not hasattr(ax, 'zaxis'):
-    raise ValueError('Must provide an Axes3D axis for 3d data')
+  ax = _get_axis(fig, ax, is_3d)
   # XXX: support old-style scatter=True kwarg usage
   if kwargs.get('scatter', False):
     kind = 'scatter'
@@ -61,11 +50,10 @@ def plot(X, marker='.', kind='plot', title=None, fig='current', ax=None,
   return plt.show
 
 
-def plot_trajectories(T, colors=None, ax=None, colorbar=False, cmap=None,
-                      alpha=1, linewidth=1):
+def plot_trajectories(T, colors=None, fig='current', ax=None, colorbar=False,
+                      cmap=None, alpha=1, linewidth=1):
   '''Plot lines in T as trajectories (2d only).'''
-  if ax is None:
-    ax = plt.gca()
+  ax = _get_axis(fig, ax, False)
   lc = LineCollection(T, array=colors, cmap=cmap, alpha=alpha,
                       linewidth=linewidth)
   ax.add_collection(lc, autolim=True)
@@ -77,11 +65,12 @@ def plot_trajectories(T, colors=None, ax=None, colorbar=False, cmap=None,
   return plt.show
 
 
-def imagesc(data, ax=None):
+def imagesc(data, title=None, fig='current', ax=None):
   '''Simple alias for a Matlab-like imshow function.'''
-  if ax is None:
-    ax = plt.gca()
+  ax = _get_axis(fig, ax, False)
   ax.imshow(data, interpolation='nearest', aspect='auto')
+  if title:
+    ax.set_title(title)
   return plt.show
 
 
@@ -108,19 +97,11 @@ def _quiver3d(ax, x, y, z, dx, dy, dz, **kwargs):
     return ax.quiver(x+dx, y+dy, z+dz, dx, dy, dz, **kwargs)
 
 
-def vector_field(points, directions, title=None, fig=None, ax=None,
+def vector_field(points, directions, title=None, fig='current', ax=None,
                  edge_style='k-', vertex_style='o'):
   '''Plots vectors that start at 'points', and move along 'directions'.'''
   assert points.shape[1] in (2,3) and directions.shape == points.shape
-  # Make sure we have an axis.
-  if ax is None:
-    if points.shape[1] == 2:
-      ax = plt.gca()
-    else:
-      from mpl_toolkits.mplot3d import Axes3D
-      if fig is None:
-        fig = plt.gcf()
-      ax = Axes3D(fig)
+  ax = _get_axis(fig, ax, points.shape[1] == 3)
   # Plot.
   if points.shape[1] == 2:
     x,y = points.T
@@ -141,3 +122,19 @@ def vector_field(points, directions, title=None, fig=None, ax=None,
   if title:
     ax.set_title(title)
   return plt.show
+
+
+def _get_axis(fig, ax, is_3d):
+  if ax is None:
+    if fig in (None, 'current'):
+      fig = plt.gcf()
+    elif fig == 'new':
+      fig = plt.figure()
+    if is_3d:
+      from mpl_toolkits.mplot3d import Axes3D
+      ax = Axes3D(fig)
+    else:
+      ax = fig.add_subplot(111)
+  elif is_3d and not hasattr(ax, 'zaxis'):
+    raise ValueError('Must provide an Axes3D axis for 3d data')
+  return ax
