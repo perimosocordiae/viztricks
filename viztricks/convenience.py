@@ -81,6 +81,7 @@ def axes_grid(n, sharex=False, sharey=False, subplot_kw=None, gridspec_kw=None,
   r = np.floor(np.sqrt(n))
   r, c = int(r), int(np.ceil(n / r))
   fig, axes = plt.subplots(nrows=r, ncols=c, figsize=(c*4, r*4), squeeze=False,
+                           sharex=sharex, sharey=sharey,
                            subplot_kw=subplot_kw, gridspec_kw=gridspec_kw,
                            **fig_kw)
   # Turn off any extra axes
