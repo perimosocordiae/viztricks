@@ -108,7 +108,7 @@ def voronoi_filled(points, colors, show_points=False, padding_fraction=0.05,
     ax = plt.gca()
   polys = PatchCollection([Polygon(vertices[region]) for region in regions],
                           cmap=cmap, alpha=alpha, edgecolor=edgecolor)
-  polys.set_array(colors)
+  polys.set_array(np.asanyarray(colors))
   ax.add_collection(polys)
 
   if show_points:
