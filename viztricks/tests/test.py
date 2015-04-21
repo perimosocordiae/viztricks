@@ -62,6 +62,8 @@ class TestVizTricks(unittest.TestCase):
   def test_irregular_contour(self):
     a,b,c = self.Y.T
     viz.irregular_contour(a, b, c)
+    # Test non-ndarray inputs as well.
+    viz.irregular_contour(a, b, range(len(c)))
 
   def test_voronoi_filled(self):
     colors = np.arange(len(self.X))

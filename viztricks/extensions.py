@@ -31,6 +31,7 @@ def irregular_contour(x, y, z, func=plt.contourf, func_kwargs=dict(),
   See http://wiki.scipy.org/Cookbook/Matplotlib/Gridding_irregularly_spaced_data
   '''
   from scipy.interpolate import griddata  # Late import; scipy is optional
+  x, y, z = map(np.asanyarray, (x, y, z))
   x_range = (x.min(), x.max())
   y_range = (y.min(), y.max())
   pad_x = padding_fraction * -np.subtract.reduce(x_range)
