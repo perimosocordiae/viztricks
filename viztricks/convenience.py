@@ -51,9 +51,11 @@ def plot(X, marker='.', kind='plot', title=None, fig='current', ax=None,
 
 
 def plot_trajectories(T, colors=None, fig='current', ax=None, colorbar=False,
-                      cmap=None, alpha=1, linewidth=1):
+                      cmap=None, alpha=1, linewidth=1, title=None):
   '''Plot lines in T as trajectories (2d only).'''
   ax = _get_axis(fig, ax, False)
+  if colors is not None:
+    colors = np.asanyarray(colors)
   lc = LineCollection(T, array=colors, cmap=cmap, alpha=alpha,
                       linewidth=linewidth)
   ax.add_collection(lc, autolim=True)
@@ -62,6 +64,8 @@ def plot_trajectories(T, colors=None, fig='current', ax=None, colorbar=False,
     cbar.set_alpha(1.)  # colorbars with alpha are ugly
     cbar.draw_all()
   ax.autoscale_view()
+  if title:
+    ax.set_title(title)
   return plt.show
 
 
