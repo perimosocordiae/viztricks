@@ -1,7 +1,8 @@
-from convenience import *
-from contexts import *
-from shims import *
-from extensions import *
+from __future__ import absolute_import
+from .convenience import *
+from .contexts import *
+from .shims import *
+from .extensions import *
 
 __all__ = [
     'plot', 'plot_trajectories', 'gradient_line', 'violinplot',

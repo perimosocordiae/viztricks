@@ -31,7 +31,7 @@ def plot(X, marker='.', kind='plot', title=None, fig='current', ax=None,
   # Do the plotting
   if kind is 'scatter':
     if is_1d:
-      ax.scatter(range(len(X)), X, marker=marker, **kwargs)
+      ax.scatter(np.arange(len(X)), X, marker=marker, **kwargs)
     elif is_3d:
       ax.scatter(X[:,0], X[:,1], X[:,2], marker=marker, **kwargs)
     else:
@@ -78,16 +78,14 @@ def imagesc(data, title=None, fig='current', ax=None):
   return plt.show
 
 
-def axes_grid(n, sharex=False, sharey=False, subplot_kw=None, gridspec_kw=None,
-              **fig_kw):
+def axes_grid(n, sharex=False, sharey=False, subplot_kw=None, **fig_kw):
   '''Finds a reasonable arrangement of n axes. Returns (fig, axes) tuple.
   For keyword arguments descriptions, see matplotlib.pyplot.subplots'''
   r = np.floor(np.sqrt(n))
   r, c = int(r), int(np.ceil(n / r))
   fig, axes = plt.subplots(nrows=r, ncols=c, figsize=(c*4, r*4), squeeze=False,
                            sharex=sharex, sharey=sharey,
-                           subplot_kw=subplot_kw, gridspec_kw=gridspec_kw,
-                           **fig_kw)
+                           subplot_kw=subplot_kw, **fig_kw)
   # Turn off any extra axes
   for ax in axes.flat[n:]:
     ax.set_axis_off()
@@ -97,9 +95,16 @@ def axes_grid(n, sharex=False, sharey=False, subplot_kw=None, gridspec_kw=None,
 def _quiver3d(ax, x, y, z, dx, dy, dz, **kwargs):
   try:
     return ax.quiver(x, y, z, dx, dy, dz, pivot='tail', **kwargs)
-  except AttributeError:
-    # this mpl doesn't have the pivot kwarg, and it defaults to 'head' behavior
-    return ax.quiver(x+dx, y+dy, z+dz, dx, dy, dz, **kwargs)
+  except AttributeError as e:
+    _, prop = e.args[0].rsplit(' ', 1)
+    if prop == 'pivot':
+      # This mpl doesn't have the pivot kwarg,
+      # and it defaults to 'head' behavior.
+      return ax.quiver(x+dx, y+dy, z+dz, dx, dy, dz, **kwargs)
+    else:
+      # We must have passed in a kwarg that this mpl doesn't know about.
+      del kwargs[prop]
+      return _quiver3d(ax, x, y, z, dx, dy, dz, **kwargs)
 
 
 def vector_field(points, directions, title=None, fig='current', ax=None,

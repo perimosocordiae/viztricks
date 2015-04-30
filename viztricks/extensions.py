@@ -17,8 +17,8 @@ def gradient_line(xs, ys, colormap_name='jet', ax=None):
     ax = plt.gca()
   cm = plt.get_cmap(colormap_name)
   npts = len(xs)-1
-  ax.set_color_cycle([cm(float(i)/npts) for i in xrange(npts)])
-  for i in xrange(npts):
+  ax.set_color_cycle([cm(float(i)/npts) for i in range(npts)])
+  for i in range(npts):
     ax.plot(xs[i:i+2],ys[i:i+2])
   return plt.show
 

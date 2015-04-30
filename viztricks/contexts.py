@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import matplotlib as mpl
 from itertools import count
@@ -58,9 +59,9 @@ class FigureSaver(object):
     # collect the frames for conversion
     total_frames = next(self.counter)
     if total_frames < 2:
-      print 'Cannot animate < 2 images. Got %d frames.' % total_frames
+      print('Cannot animate < 2 images. Got', total_frames, 'frames.')
       return False
-    filenames = [self.fpatt % n for n in xrange(total_frames)]
+    filenames = [self.fpatt % n for n in range(total_frames)]
     # shell out to imagemagick to animate
     check_call(['convert', '-delay', str(self.delay)] + filenames[:-1] +
                ['-delay', '200', filenames[-1], self.name + '.gif'])
