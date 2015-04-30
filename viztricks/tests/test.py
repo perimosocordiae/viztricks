@@ -1,8 +1,6 @@
-import matplotlib
-matplotlib.use('template')  # Mock backend, doesn't show anything
-
 import numpy as np
 import matplotlib.pyplot as plt
+plt.switch_backend('template')  # Mock backend, doesn't show anything
 import unittest
 import viztricks as viz
 from viztricks import shims
@@ -13,6 +11,13 @@ except ImportError:
   has_sklearn = False
 else:
   has_sklearn = True
+
+try:
+  import scipy
+except ImportError:
+  has_scipy = False
+else:
+  has_scipy = True
 
 
 class TestVizTricks(unittest.TestCase):
@@ -65,6 +70,7 @@ class TestVizTricks(unittest.TestCase):
     # Test non-ndarray inputs as well.
     viz.irregular_contour(a, b, range(len(c)))
 
+  @unittest.skipUnless(has_scipy, 'requires scipy')
   def test_voronoi_filled(self):
     colors = np.arange(len(self.X))
     viz.voronoi_filled(self.X, colors, show_points=True)
