@@ -43,13 +43,23 @@ def irregular_contour(x, y, z, func=plt.contourf, func_kwargs=dict(),
   return func(grid_x, grid_y, grid_z, **func_kwargs)
 
 
-def voronoi_filled(points, colors, show_points=False, padding_fraction=0.05,
-                   cmap=None, ax=None, alpha=None, edgecolor=None):
-  '''Plots a filled voronoi diagram, using the given points and their colors.'''
+def voronoi_filled(points_or_voronoi, colors, show_points=False,
+                   padding_fraction=0.05, cmap=None, ax=None, alpha=None,
+                   edgecolor=None):
+  '''Plots a filled voronoi diagram, using the given points and their colors.
+  The first parameter must be an array-like or a scipy.stats.Voronoi object.
+  '''
   from scipy.spatial import Voronoi  # Late import; scipy is optional
+
+  # Disambiguate the first parameter
+  if isinstance(points_or_voronoi, Voronoi):
+    vor = points_or_voronoi
+  else:
+    points = np.asanyarray(points_or_voronoi)
+    assert points.shape[1] == 2, 'Input points must be 2D'
+    vor = Voronoi(points)
+
   # Borrowed from http://nbviewer.ipython.org/gist/pv/8037100
-  assert points.shape[1] == 2, 'Input points must be 2D'
-  vor = Voronoi(points)
   regions = []
   vertices = vor.vertices.tolist()
 
@@ -112,7 +122,7 @@ def voronoi_filled(points, colors, show_points=False, padding_fraction=0.05,
   ax.add_collection(polys)
 
   if show_points:
-    ax.plot(points[:,0], points[:,1], 'ko')
+    ax.plot(vor.points[:,0], vor.points[:,1], 'ko')
 
   # Zoom to a reasonable scale.
   pad = padding_fraction * (vor.max_bound - vor.min_bound)
