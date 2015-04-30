@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='viztricks',
-    version='0.0.1',
+    version='0.1.0',
     author='CJ Carey',
     author_email='perimosocordiae@gmail.com',
     description='Recipes and helper functions for plotting with Python',
