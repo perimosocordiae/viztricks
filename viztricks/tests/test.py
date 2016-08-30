@@ -96,5 +96,10 @@ class TestVizTricks(unittest.TestCase):
     plt.savefig = old_savefig
     self.assertEqual(saved_fnames, ['test-00000.png', 'test-00001.png'])
 
+  def test_jitter_overlay(self):
+    data = [np.arange(4), [1,1,1,2,3,1], [3,4]]
+    viz.jitter_overlay(data, kind='boxplot')
+    viz.jitter_overlay(data, kind='violinplot', vert=False)
+
 if __name__ == '__main__':
   unittest.main()

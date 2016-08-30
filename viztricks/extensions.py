@@ -1,12 +1,15 @@
+from __future__ import absolute_import
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from matplotlib.patches import Polygon, Ellipse
 
+from .shims import violinplot
+
 __all__ = [
     'gradient_line', 'irregular_contour',
-    'voronoi_filled', 'pca_ellipse', 'embedded_images'
+    'voronoi_filled', 'pca_ellipse', 'embedded_images', 'jitter_overlay'
 ]
 
 
@@ -17,7 +20,11 @@ def gradient_line(xs, ys, colormap_name='jet', ax=None):
     ax = plt.gca()
   cm = plt.get_cmap(colormap_name)
   npts = len(xs)-1
-  ax.set_color_cycle([cm(float(i)/npts) for i in range(npts)])
+  colors = cm(np.linspace(0, 1, num=npts))
+  if hasattr(ax, 'set_prop_cycle'):
+    ax.set_prop_cycle(color=colors)
+  else:
+    ax.set_color_cycle(colors)
   for i in range(npts):
     ax.plot(xs[i:i+2],ys[i:i+2])
   return plt.show
@@ -177,4 +184,31 @@ def embedded_images(X, images, exclusion_radius=None, ax=None, cmap=None,
     mask = (dist > exclusion_radius).ravel()
     X = X[mask]
     images = images[mask]
+  return plt.show
+
+
+def jitter_overlay(data, kind='boxplot', ax=None, vert=True, jitter_scale=0.1,
+                   jitter_alpha=0.75, jitter_color='k', jitter_marker='.',
+                   **plot_kwargs):
+  '''Plots jittered points on top of a boxplot or violinplot.'''
+  if ax is None:
+    ax = plt.gca()
+  if kind == 'boxplot':
+    ax.boxplot(data, vert=vert, **plot_kwargs)
+  elif kind == 'violinplot':
+    try:
+      ax.violinplot(data, vert=vert, **plot_kwargs)
+    except AttributeError:
+      violinplot(data, vert=vert, ax=ax, **plot_kwargs)
+  else:
+    raise ValueError('Unknown plot type: %r' % kind)
+
+  # XXX: hack, should probably inspect the return value of the plot fn
+  pos = ax.get_xticks() if vert else ax.get_yticks()
+
+  for i, y in enumerate(data):
+    x = np.random.normal(loc=pos[i], scale=jitter_scale, size=len(y))
+    if not vert:
+      x, y = y, x
+    ax.scatter(x, y, c=jitter_color, marker=jitter_marker, alpha=jitter_alpha)
   return plt.show
