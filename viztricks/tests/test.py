@@ -30,19 +30,21 @@ class TestVizTricks(unittest.TestCase):
     viz.plot(self.X, '-o', title='Test')
     viz.plot(self.X, scatter=True, c=self.X.sum(axis=1))
     viz.plot(self.X[0])
-    viz.plot(self.X[0], scatter=True)
+    viz.plot(self.X[0], kind='scatter')
     viz.plot(self.Y, '-o', title='Test')
     viz.plot(self.Y, scatter=True, c=self.Y.sum(axis=1))
     viz.plot(self.Y, fig='new')
     viz.plot(self.Y, fig=plt.gcf())
+    self.assertRaises(ValueError, viz.plot, self.Y, kind='foobar')
+    self.assertRaises(ValueError, viz.plot, np.zeros((1,2,3)))
 
   def test_plot_trajectories(self):
-    viz.plot_trajectories([self.X, self.X+2], colors=np.arange(2))
-    viz.plot_trajectories([])
+    viz.plot_trajectories([self.X, self.X+2], colors=[1, 2], colorbar=True)
+    viz.plot_trajectories([], title='test')
 
   def test_imagesc(self):
     viz.imagesc(self.X)
-    viz.imagesc(self.X, ax=plt.gca())
+    viz.imagesc(self.X, ax=plt.gca(), title='test')
 
   def test_axes_grid(self):
     fig, axes = viz.axes_grid(1)
@@ -63,6 +65,9 @@ class TestVizTricks(unittest.TestCase):
   def test_vector_field(self):
     viz.vector_field(self.X, -self.X/2, title='arrows')
     viz.vector_field(self.Y, -self.Y/2, title='arrows')
+    # test 2d plot on a 3d axis
+    ax = plt.subplot(111, projection='3d')
+    viz.vector_field(self.X, -self.X/2, ax=ax)
 
   def test_irregular_contour(self):
     a,b,c = self.Y.T
@@ -74,6 +79,8 @@ class TestVizTricks(unittest.TestCase):
   def test_voronoi_filled(self):
     colors = np.arange(len(self.X))
     viz.voronoi_filled(self.X, colors, show_points=True)
+    vor = scipy.spatial.Voronoi(self.X)
+    viz.voronoi_filled(vor, colors, ax=plt.gca())
 
   @unittest.skipUnless(has_sklearn, 'requires scikit-learn')
   def test_pca_ellipse(self):
@@ -81,6 +88,7 @@ class TestVizTricks(unittest.TestCase):
     self.assertAlmostEqual(ell.angle, 165.0567, places=4)
     self.assertAlmostEqual(ell.width, 2.9213, places=4)
     self.assertAlmostEqual(ell.height, 0.7115, places=4)
+    viz.pca_ellipse(self.Y, loc=(0,0), ax=plt.gca())
 
   def test_embedded_images(self):
     images = np.random.random((len(self.X), 3, 3))
@@ -100,6 +108,7 @@ class TestVizTricks(unittest.TestCase):
     data = [np.arange(4), [1,1,1,2,3,1], [3,4]]
     viz.jitter_overlay(data, kind='boxplot')
     viz.jitter_overlay(data, kind='violinplot', vert=False)
+    self.assertRaises(ValueError, viz.jitter_overlay, data, kind='foobar')
 
 if __name__ == '__main__':
   unittest.main()
