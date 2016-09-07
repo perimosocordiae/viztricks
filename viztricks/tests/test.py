@@ -104,11 +104,10 @@ class TestVizTricks(unittest.TestCase):
     plt.savefig = old_savefig
     self.assertEqual(saved_fnames, ['test-00000.png', 'test-00001.png'])
 
-  def test_jitter_overlay(self):
+  def test_jitterplot(self):
     data = [np.arange(4), [1,1,1,2,3,1], [3,4]]
-    viz.jitter_overlay(data, kind='boxplot')
-    viz.jitter_overlay(data, kind='violinplot', vert=False)
-    self.assertRaises(ValueError, viz.jitter_overlay, data, kind='foobar')
+    viz.jitterplot(data, positions=[4,5,6], alpha=0.5)
+    viz.jitterplot(data, vert=False, scale=0)
 
 if __name__ == '__main__':
   unittest.main()

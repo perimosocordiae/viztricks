@@ -5,11 +5,10 @@ from matplotlib.collections import PatchCollection
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from matplotlib.patches import Polygon, Ellipse
 
-from .shims import violinplot
-
+#TODO: add a simple swarmplot implementation
 __all__ = [
     'gradient_line', 'irregular_contour',
-    'voronoi_filled', 'pca_ellipse', 'embedded_images', 'jitter_overlay'
+    'voronoi_filled', 'pca_ellipse', 'embedded_images', 'jitterplot'
 ]
 
 
@@ -187,28 +186,25 @@ def embedded_images(X, images, exclusion_radius=None, ax=None, cmap=None,
   return plt.show
 
 
-def jitter_overlay(data, kind='boxplot', ax=None, vert=True, jitter_scale=0.1,
-                   jitter_alpha=0.75, jitter_color='k', jitter_marker='.',
-                   **plot_kwargs):
-  '''Plots jittered points on top of a boxplot or violinplot.'''
+def jitterplot(data, positions=None, ax=None, vert=True, scale=0.1,
+               **scatter_kwargs):
+  '''Plots jittered points as a distribution visualizer.
+
+  Scatter plot arguments default to: marker='.', c='k', alpha=0.75
+  Also known as a stripplot.
+  See also: boxplot, violinplot, beeswarm
+  '''
   if ax is None:
     ax = plt.gca()
-  if kind == 'boxplot':
-    ax.boxplot(data, vert=vert, **plot_kwargs)
-  elif kind == 'violinplot':
-    try:
-      ax.violinplot(data, vert=vert, **plot_kwargs)
-    except AttributeError:
-      violinplot(data, vert=vert, ax=ax, **plot_kwargs)
-  else:
-    raise ValueError('Unknown plot type: %r' % kind)
+  if positions is None:
+    positions = range(len(data))
 
-  # XXX: hack, should probably inspect the return value of the plot fn
-  pos = ax.get_xticks() if vert else ax.get_yticks()
+  kwargs = dict(marker='.', c='k', alpha=0.75)
+  kwargs.update(scatter_kwargs)
 
-  for i, y in enumerate(data):
-    x = np.random.normal(loc=pos[i], scale=jitter_scale, size=len(y))
+  for pos, y in zip(positions, data):
+    x = np.random.normal(loc=pos, scale=scale, size=len(y))
     if not vert:
       x, y = y, x
-    ax.scatter(x, y, c=jitter_color, marker=jitter_marker, alpha=jitter_alpha)
+    ax.scatter(x, y, **kwargs)
   return plt.show

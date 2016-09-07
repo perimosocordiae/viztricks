@@ -7,5 +7,5 @@ from .extensions import *
 __all__ = [
     'plot', 'plot_trajectories', 'gradient_line', 'violinplot',
     'vector_field', 'FigureSaver', 'irregular_contour', 'voronoi_filled',
-    'pca_ellipse', 'axes_grid', 'imagesc', 'embedded_images', 'jitter_overlay'
+    'pca_ellipse', 'axes_grid', 'imagesc', 'embedded_images', 'jitterplot'
 ]
