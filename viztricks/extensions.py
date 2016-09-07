@@ -203,7 +203,10 @@ def jitterplot(data, positions=None, ax=None, vert=True, scale=0.1,
   kwargs.update(scatter_kwargs)
 
   for pos, y in zip(positions, data):
-    x = np.random.normal(loc=pos, scale=scale, size=len(y))
+    if scale > 0:
+      x = np.random.normal(loc=pos, scale=scale, size=len(y))
+    else:
+      x = np.zeros_like(y) + pos
     if not vert:
       x, y = y, x
     ax.scatter(x, y, **kwargs)
